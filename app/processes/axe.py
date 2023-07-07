@@ -16,7 +16,7 @@ from ..utils import logger
 # define how to get data from postgres
 def get_axes(new_data_id):
     data = axe_postgres(new_data_id)
-    logger.debug(f'{data}')
+    # logger.debug(f'{data}')
     return data
 
 
@@ -28,6 +28,5 @@ def throw_axes(data):
 # for executing both functions in sequence
 def execute_axes(new_data_id):
     data = get_axes(new_data_id)
-    logger.debug(f'Axe Data from Postgres:\n\n{data}')
     throw_axes(data)
     logger.debug('Inserting into Clickhouse')
