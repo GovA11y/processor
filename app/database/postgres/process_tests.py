@@ -74,5 +74,10 @@ def main():
     print(data)  # Print to check selected data
 
 
+def mark_rule_as_processed(rule_id):
+    query = "UPDATE axe.rules SET imported = true WHERE id = :rule_id"
+    session.execute(text(query), {'rule_id': rule_id})
+    session.commit()
+
 if __name__ == "__main__":
     main()

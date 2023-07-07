@@ -7,6 +7,7 @@ Inserts Axe A11y tests into ClickHouse from Postgres
 """
 from .connect import client as clickhouse_client
 import json
+import html
 from datetime import datetime
 import uuid
 from .. import logger
@@ -33,12 +34,30 @@ def insert_axe_into_clickhouse(data):
         # parse JSON in 'nodes' column
         nodes = row['nodes'] if isinstance(row['nodes'], list) else json.loads(row['nodes'])
         # for every 'node' in 'nodes' do an individual insert
+        if not nodes:
+            nodes = [{}]
         for node in nodes:
 
             # Here we make manual adjustments to extract values from the JSON object
             # like 'target', 'html', 'failureSummary'
             # and ensure that other values are correctly formatted for insertion
-            failure_summary = f"'{node.get('failureSummary')}'" if node.get('failureSummary') is not None else "NULL"
+
+            # Sanitize Failure Summary Data
+            failure_summary = node.get('failureSummary')
+            if failure_summary is not None:
+                # Replace newline characters
+                failure_summary = failure_summary.replace('\n', ' ')
+                # Replace null characters
+                failure_summary = failure_summary.replace('\0', '')
+                # Escape special characters using repr
+                failure_summary = repr(failure_summary)
+            else:
+                failure_summary = "NULL"
+
+            # Get & Sanitize html
+            html_string = node.get('html')
+            clean_html = sanitize_html(html_string)
+
             # Use `row` object to get `created_at`
             if row.get('created_at') is not None:
                 tested_at = f"'{row.get('created_at').strftime('%Y-%m-%d %H:%M:%S')}'"
@@ -56,13 +75,31 @@ def insert_axe_into_clickhouse(data):
                 {row.get('scan_id', 0)}, {row.get('rule_id', 0)}, '{uuid.uuid4()}', {tested_at},
                 '{row.get('rule_type', '')}', '{row.get('axe_id', '')}', '{node.get('impact', '')}',
                 '{node.get('target', [None])[0] if node.get('target') is not None else ''}',
-                '{node.get('html', '')}', {failure_summary}, {created_at},
+                {clean_html}, {failure_summary}, {created_at},
                 {row.get('active', 1)},
                 {row.get('section508', 0)}, {row.get('super_waggy', 0)}
             )"""
-            client.execute(query)
-            # logger.debug(f'Executing Clickhouse Query: {query}')
+            try:
+                client.execute(query)
+            except Exception as e:
+                logger.error(f'Failed to insert data into ClickHouse. HTML being processed: {html}')
+                logger.exception("Exception: ")
+
 
     # close the client connection
     client.disconnect()
     logger.debug('ClickHouse Connection Closed')
+
+
+def sanitize_html(html_string):
+    html_string = html_string if html_string is not None else "NULL"
+    html_string = html_string.strip("'")
+    # Unescape any HTML special characters
+    html_string = html.unescape(html_string)
+    # Replace newline and tab characters
+    html_string = html_string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+    # Remove any other potential special characters
+    html_string = html_string.translate({ord(i): None for i in '\0'})
+    # Escape special characters
+    html_string = repr(html_string)
+    return html_string

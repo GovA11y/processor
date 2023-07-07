@@ -9,6 +9,8 @@ and copying over to ClickHouse
     1) Trigger app/database/postgres/process_tests.py and select data
     2) Send data to app/database/clickhouse/process_tests.py
 """
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 from ..database import axe_postgres, axe_clickhouse
 from ..utils import logger
 
