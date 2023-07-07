@@ -6,6 +6,7 @@ Creates connection to ClickHouse
 from clickhouse_driver import Client
 from dotenv import load_dotenv
 import os
+from .. import logger
 
 # Load .env variables
 load_dotenv()
@@ -25,11 +26,11 @@ def test_connection():
     try:
         result = client.execute('SELECT 1')
         if result[0][0] == 1:
-            print("Connected to ClickHouse")
+            logger.debug("Connected to ClickHouse")
         else:
-            print("Unable to connect to ClickHouse, test query did not return expected result.")
+            logger.error("Unable to connect to ClickHouse, test query did not return expected result.")
     except Exception as e:
-        print(f"Unable to connect to ClickHouse: {str(e)}")
+        logger.critical(f"Unable to connect to ClickHouse: {str(e)}")
 
 
 test_connection()

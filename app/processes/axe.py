@@ -10,23 +10,24 @@ and copying over to ClickHouse
     2) Send data to app/database/clickhouse/process_tests.py
 """
 from ..database import axe_postgres, axe_clickhouse
-
-new_data_id = 181
+from ..utils import logger
 
 
 # define how to get data from postgres
 def get_axes(new_data_id):
-    data = axe_postgres.select_rules_data(new_data_id)
-    print(f"{data}")
+    data = axe_postgres(new_data_id)
+    logger.debug(f'{data}')
     return data
 
 
 # define how to put data into ClickHouse
 def throw_axes(data):
-    axe_clickhouse.insert_axe_into_clickhouse(data)
+    axe_clickhouse(data)
 
 
 # for executing both functions in sequence
 def execute_axes(new_data_id):
     data = get_axes(new_data_id)
+    logger.debug(f'Axe Data from Postgres:\n\n{data}')
     throw_axes(data)
+    logger.debug('Inserting into Clickhouse')

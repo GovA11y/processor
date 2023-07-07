@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, registry
 import os
+from .. import logger
 
 # load .env variables
 load_dotenv()
@@ -35,14 +36,15 @@ def test_connection():
     connection = None
     try:
         connection = engine.connect()
-        print("Connected to PostgreSQL")
+        logger.debug("Connected to 🐘")
     except Exception as e:
-        print(f"Unable to connect to PostgreSQL: {str(e)}")
+        logger.error(f"Unable to connect to PostgreSQL: {str(e)}")
     finally:
         # Ensure the connection object is not None before trying to close it
         if connection:
             connection.close()
-            print("Connection closed")
+            logger.debug("🐘 Connection closed")
+
 
 
 test_connection()

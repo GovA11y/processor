@@ -7,8 +7,10 @@ Inserts Axe A11y tests into ClickHouse from Postgres
 """
 from .connect import client as clickhouse_client
 import json
+from .. import logger
 
 client = clickhouse_client
+
 
 def insert_axe_into_clickhouse(data):
     """Inserts data into ClickHouse.
@@ -29,7 +31,7 @@ def insert_axe_into_clickhouse(data):
             # and ensure that other values are correctly formatted for insertion
 
             query = f"""
-            INSERT INTO axe_tests
+            INSERT INTO tests
             (
                 id, scan_id, rule_type,
                 description, help, help_url,
@@ -45,6 +47,8 @@ def insert_axe_into_clickhouse(data):
                 '{row['created_at']}'
             )"""
             client.execute(query)
+            logger.debug(f'Executing Clickhouse Query: {query}')
 
     # close the client connection
     client.disconnect()
+    logger.debug('ClickHouse Connection Closed')
