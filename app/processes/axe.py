@@ -17,6 +17,7 @@ new_data_id = 181
 # define how to get data from postgres
 def get_axes(new_data_id):
     data = axe_postgres.select_rules_data(new_data_id)
+    print(f"{data}")
     return data
 
 
