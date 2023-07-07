@@ -4,3 +4,4 @@
 venv
 __pycache__
 BUILDER.md
+logs*
