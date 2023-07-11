@@ -13,22 +13,26 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from ..database import axe_postgres, axe_clickhouse
 from ..utils import logger
+from .preprocess_tests import preprocess_data
 
 
 # define how to get data from postgres
 def get_axes(new_data_id):
     data = axe_postgres(new_data_id)
-    # logger.debug(f'{data}')
     return data
 
+# define how to preprocess data
+def preprocess_axes(data):
+    preprocessed_data = preprocess_data(data)
+    return preprocessed_data
 
 # define how to put data into ClickHouse
 def throw_axes(data):
     axe_clickhouse(data)
 
-
 # for executing both functions in sequence
 def execute_axes(new_data_id):
     data = get_axes(new_data_id)
-    throw_axes(data)
+    preprocessed_data = preprocess_axes(data)  # preprocess the data
+    throw_axes(preprocessed_data)
     logger.debug('Inserting into Clickhouse')
