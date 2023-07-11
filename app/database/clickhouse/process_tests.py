@@ -6,6 +6,7 @@ Inserts Axe A11y tests into ClickHouse from Postgres
 
 """
 from .connect import client as clickhouse_client
+import traceback
 import json
 import html
 from datetime import datetime
@@ -82,8 +83,12 @@ def insert_axe_into_clickhouse(data):
             try:
                 client.execute(query)
             except Exception as e:
+            # Log the relevant parts of the exception
+                exception_traceback = traceback.format_exc()
                 logger.error(f'Failed to insert data into ClickHouse. HTML being processed: {html}')
-                logger.exception("Exception: ")
+                logger.error(f'Failed Query:\n{query}')
+                logger.error(f'Exception: {str(e)}')
+                logger.debug(f'Exception Traceback:\n{exception_traceback}')
 
 
     # close the client connection
