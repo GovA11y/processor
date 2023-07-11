@@ -8,6 +8,7 @@ import json
 import html
 import uuid
 from datetime import datetime
+from ..utils import logger
 
 def preprocess_data(data):
     """Preprocesses data for insertion into ClickHouse.
@@ -36,20 +37,20 @@ def preprocess_data(data):
             # Preprocess data and append to preprocessed_data
             preprocessed_data.append({
                 "domain_id": row.get('domain_id', 0),
-                "domain": row.get('domain', ''),
+                "domain": row.get('domain', '') or '',
                 "url_id": row.get('url_id', 0),
-                "url": row.get('url', ''),
+                "url": row.get('url', '') or '',
                 "scan_id": row.get('scan_id', 0),
                 "rule_id": row.get('rule_id', 0),
                 "test_id": str(uuid.uuid4()),
-                "tested_at": format_datetime(row.get('created_at')),
-                "rule_type": row.get('rule_type', ''),
-                "axe_id": row.get('axe_id', ''),
-                "impact": node.get('impact', ''),
-                "target": node.get('target', [None])[0] if node.get('target') is not None else '',
-                "html": clean_html,
-                "failure_summary": failure_summary,
-                "created_at": format_datetime(datetime.now()),
+                "tested_at": format_datetime(row.get('created_at')) or '',
+                "rule_type": row.get('rule_type', '') or '',
+                "axe_id": row.get('axe_id', '') or '',
+                "impact": node.get('impact', '') or '',
+                "target": node.get('target', [None])[0] if node.get('target') is not None else '' or '',
+                "html": clean_html or '',
+                "failure_summary": failure_summary or '',
+                "created_at": format_datetime(datetime.now()) or '',
                 "active": row.get('active', 1),
                 "section508": row.get('section508', 0),
                 "super_waggy": row.get('super_waggy', 0)
@@ -85,6 +86,8 @@ def sanitize_html(html_string):
         str: The sanitized html data.
     """
     html_string = html_string if html_string is not None else "NULL"
+    # Check & fix UTF8 issues
+    html_string = properly_encode_html(html_string)
     html_string = html_string.strip("'")
     html_string = html.unescape(html_string)
     html_string = html_string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
@@ -92,16 +95,26 @@ def sanitize_html(html_string):
     return repr(html_string)
 
 
+def properly_encode_html(html_string):
+    try:
+        html_string.encode('utf-8')
+    except UnicodeEncodeError:
+        logger.debug('String is NOT UTF8, fixing...')
+        # Replace invalid characters with a replacement character
+        html_string = html_string.encode('utf-8', errors='replace').decode('utf-8')
+    return html_string
+
+
 def format_datetime(dt):
-    """Formats a datetime object into a string.
+    """Formats a datetime object.
 
     Args:
         dt (datetime): The datetime object to be formatted.
 
     Returns:
-        str: The formatted datetime string.
+        datetime: The formatted datetime.
     """
     if dt is not None:
-        return dt.strftime('%Y-%m-%d %H:%M:%S')
+        return dt
     else:
-        return "NULL"
+        return None

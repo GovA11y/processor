@@ -10,7 +10,7 @@ SessionLocal = sessionmaker(bind=engine)
 session = SessionLocal()
 
 
-def fetch_unprocessed_rules(limit=2):
+def fetch_unprocessed_rules(limit=10):
     """Fetches all rule_id that are not processed yet."""
     result = session.execute(text("""
         SELECT id as rule_id

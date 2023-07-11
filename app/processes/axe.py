@@ -35,4 +35,3 @@ def execute_axes(new_data_id):
     data = get_axes(new_data_id)
     preprocessed_data = preprocess_axes(data)  # preprocess the data
     throw_axes(preprocessed_data)
-    logger.debug('Inserting into Clickhouse')
