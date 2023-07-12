@@ -1,5 +1,6 @@
 # fetch_unprocessed.py
 # Relative Path: app/database/postgres/fetch_unprocessed.py
+import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from .connect import engine
@@ -10,15 +11,20 @@ SessionLocal = sessionmaker(bind=engine)
 session = SessionLocal()
 
 
-def fetch_unprocessed_rules(limit=10000):
-    """Fetches all rule_id that are not processed yet."""
+def fetch_unprocessed_rules(limit=10000, offset=0):
+    """Fetches unprocessed rule_id from Postgres with limit and offset."""
+    rule_limit = int(os.environ.get('RULE_LIMIT', limit))
+    rule_offset = int(os.environ.get('RULE_OFFSET', offset))
+
     result = session.execute(text("""
         SELECT id as rule_id
         FROM axe.rules
         WHERE imported = false
-        LIMIT :limit
-     """), {'limit': limit})
-    logger.info(f'Importing {limit} unprocessed rules from Postgres')
+        ORDER BY id
+        LIMIT :rule_limit OFFSET :rule_offset
+    """), {'rule_limit': rule_limit, 'rule_offset': rule_offset})
+
+    logger.info(f'Importing {rule_limit} unprocessed rules from Postgres with offset {rule_offset}')
 
     # Fetch all records from the query execution result
     records = result.fetchall()
