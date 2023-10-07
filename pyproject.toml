@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "rabbit-run"
+version = "0.1.0"
+description = "Large dataset processing tools, transfers, and functionality"
+authors = ["Bentley Hensel <bentleyhensel@gmail.com>"]
+license = "agpl-3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

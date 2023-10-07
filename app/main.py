@@ -1,19 +1,11 @@
-# main.py
-# Relative Path: app/main.py
-"""
-# Main Controller of GovA11y Data Processing
-
-"""
+# app/main.py
 import time
 import sys
 import os
+from .utils import logger
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app.processes import execute_axes
 from app.database import fetch_unprocessed_rules, mark_axe_rule_as_processed
-
-# rule_id = 15
-# 1363
-
 
 def yeet_axes():
     while True:
