@@ -1,7 +1,5 @@
-.nova
 .DS_Store
 .env
 venv
 __pycache__
-BUILDER.md
 logs*
