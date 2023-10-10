@@ -27,9 +27,3 @@ def configure_pyroscope():
     )
     logger.info('Pyroscope Configured')
 
-
-def traces_sampler(sampling_context):
-    # Customize your sampling logic here if needed
-    # return a number between 0 and 1 or a boolean
-    return 1.0
-
