@@ -1,2 +1,2 @@
 # app/utils/__init__.py
-from .monitoring import which_extras as configure_monitoring
+from .monitoring import which_extras as configure_monitoring, logger
