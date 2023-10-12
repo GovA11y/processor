@@ -3,11 +3,18 @@ name = "rabbit-run"
 version = "0.1.0"
 description = "Large dataset processing tools, transfers, and functionality"
 authors = ["Bentley Hensel <bentleyhensel@gmail.com>"]
-license = "agpl-3"
+license = "AGPL-3.0-or-later"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+clickhouse-driver = "^0.2.6"
+sqlalchemy = "^2.0.21"
+python-dotenv = "^1.0.0"
+sentry-sdk = "^1.31.0"
+pyroscope-io = "^0.8.5"
+psycopg2-binary = "^2.9.9"
+requests = "^2.31.0"
 
 
 [tool.poetry.group.dev.dependencies]
