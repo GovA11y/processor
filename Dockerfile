@@ -1,34 +1,22 @@
-# Use an official Python runtime as a parent image
-# Use bullseye with Python pre-installed
-FROM python:3.9-bullseye
+# Use an official Python image
+FROM python:3.11-slim
 
-# Set the working directory to /app
+# Install Poetry
+RUN pip install --upgrade pip \
+    && pip install poetry \
+    && poetry config virtualenvs.create false
+
+# Create and set working directory
 WORKDIR /app
 
-# Copy all the things...
-ADD . /app/
+# Copy over the pyproject.toml and poetry.lock file to install dependencies
+COPY pyproject.toml poetry.lock* /app/
 
-# Add essential packages and psycopg2 prerequisites then upgrade pip
-RUN apt-get update && apt-get install -y \
-    gcc \
-    python3-dev \
-    libpq-dev \
-&& pip install --upgrade pip
+# Install runtime dependencies using Poetry
+RUN poetry install --no-dev
 
-# Install python packages and remove unnecessary packages
-RUN pip install --no-cache-dir -r requirements.txt \
-    && apt-get autoremove -y gcc python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy the rest of the code
+COPY . /app/
 
-# Make Log file
-RUN mkdir -p /app/logs
-
-
-# Env Variables
-ENV APP_PORT=3000
-
-# Expose APP_PORT of the container to the outside
-EXPOSE $APP_PORT
-
-# Run the command to start things...
-CMD ["python", "app/main.py"]
+# Command to run the application
+CMD ["python3", "-m", "run"]
