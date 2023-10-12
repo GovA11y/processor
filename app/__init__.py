@@ -1,4 +1,10 @@
-# __init__.py
-# Relative Path: app/__init__.py
-from .utils import logger
-from .processes import preprocess_data
+# app/__init__.py
+from .utils import configure_monitoring, logger
+from dotenv import load_dotenv
+from .database.postgres.connect import test_connection
+
+def startup():
+    logger.info('Starting up...')
+    load_dotenv()
+    configure_monitoring()
+    test_connection()
