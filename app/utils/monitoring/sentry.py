@@ -2,7 +2,7 @@
 import os
 from .logging import logger, LOG_LEVEL
 import sentry_sdk
-from sentry_sdk.integrations.logging import LoggingIntegration
+#from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.excepthook import ExcepthookIntegration
 from sentry_sdk.integrations.modules import ModulesIntegration
 from sentry_sdk.integrations.threading import ThreadingIntegration
@@ -13,7 +13,7 @@ def configure_sentry():
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
         integrations=[
-            LoggingIntegration(level=LOG_LEVEL),
+           # LoggingIntegration(level=LOG_LEVEL),
             ExcepthookIntegration(always_run=True),
             ModulesIntegration(),
             ThreadingIntegration(propagate_hub=True),
