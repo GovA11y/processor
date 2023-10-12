@@ -19,6 +19,9 @@ def find_nakies():
         home_url = get_home_url(domain)
         record_home_url(domain_id, home_url)
 
+        if home_url != "BADDIE":
+            upsert_url(domain_id, home_url)
+
         if home_url == "BADDIE":
             logger.debug(f'We got a BADDIE for %s', domain)
         else:
@@ -51,3 +54,8 @@ def record_home_url(domain_id, home_url):
     variables = {"domain_id": domain_id, "home_url": home_url}
     result = run_query(query_name, variables)
 
+def upsert_url(domain_id, home_url):
+    logger.debug('Upserting url for domain_id: %s', domain_id)
+    query_name = "upsert_url"
+    variables = {"domain_id": domain_id, "home_url": home_url}
+    result = run_query(query_name, variables)

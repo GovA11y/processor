@@ -11,7 +11,6 @@ def process_loop(process_func, sleep_time):
         if not process_func():  # If there is no data to process
             time.sleep(sleep_time)  # Wait for the specified amount of time
 
-
 def start_processes():
     logger.info('Starting processes...')
 
