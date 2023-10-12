@@ -6,6 +6,9 @@ RUN pip install --upgrade pip \
     && pip install poetry \
     && poetry config virtualenvs.create false
 
+# Create a logs directory in case nothing is mounted...
+RUN mkdir /logs
+
 # Create and set working directory
 WORKDIR /app
 
