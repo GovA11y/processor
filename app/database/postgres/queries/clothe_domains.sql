@@ -1,0 +1,2 @@
+-- app/database/postgres/queries/clothe_domains.sql
+-- Creates url entry
